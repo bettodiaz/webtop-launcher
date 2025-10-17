@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { CubeTransparentIcon, Bars3Icon } from '@heroicons/react/24/outline';
 // Fix: Corrected import path for the api service.
-import { mockChangePassword } from '../services/api';
+import { changePassword } from '../services/api';
 
 const ChangePasswordModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { user } = useAuth();
@@ -28,15 +28,12 @@ const ChangePasswordModal: React.FC<{ onClose: () => void }> = ({ onClose }) => 
         setSuccess('');
         setLoading(true);
         try {
-            const result = await mockChangePassword(user.id, currentPassword, newPassword);
-            if(result.success) {
-                setSuccess(result.message);
-                setTimeout(() => {
-                    onClose();
-                }, 2000);
-            } else {
-                setError(result.message);
-            }
+      const result = await changePassword(currentPassword, newPassword);
+      // Assuming API returns nothing on success, or throws on error
+      setSuccess('Password changed successfully.');
+      setTimeout(() => {
+        onClose();
+      }, 2000);
         } catch (err) {
             setError("An unexpected error occurred.");
         } finally {
