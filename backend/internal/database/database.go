@@ -98,7 +98,7 @@ func SeedInitialData() error {
 		VALUES
 			('VS Code', 'https://cdn.icon-icons.com/icons2/2107/PNG/512/file_type_vscode_icon_130084.png', 'https://github.com/linuxserver/docker-code-server', '...', true),
 			('Ubuntu Desktop', 'https://cdn.icon-icons.com/icons2/1508/PNG/512/ubuntu_104494.png', 'https://github.com/linuxserver/docker-webtop', '...', true)
-		ON CONFLICT (id) DO NOTHING;
+		ON CONFLICT (name) DO NOTHING;
 		`)
 	return err
 }
