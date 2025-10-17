@@ -79,26 +79,26 @@ func createTables() error {
 
 // SeedInitialData inserts default users and applications if they do not exist.
 func SeedInitialData() error {
-		// Default password is 'password' - hashed with bcrypt
-		// We'll insert an admin and a normal user, plus example applications.
-		// Note: bcrypt is used in handlers when creating users; here we'll insert hashes directly for simplicity.
-		_, err := DB.Exec(`
+	// Default password is 'password' - hashed with bcrypt
+	// We'll insert an admin and a normal user, plus example applications.
+	// Note: bcrypt is used in handlers when creating users; here we'll insert hashes directly for simplicity.
+	_, err := DB.Exec(`
 		INSERT INTO users (id, username, password_hash, is_admin)
 		VALUES
 			('00000000-0000-0000-0000-000000000001', 'admin', '$2a$10$7EqJtq98hPqEX7fNZaFWoOaWc0w9fQxqY0ZyZqQYq9a6/2aP8s0e', true),
 			('00000000-0000-0000-0000-000000000002', 'user', '$2a$10$7EqJtq98hPqEX7fNZaFWoOaWc0w9fQxqY0ZyZqQYq9a6/2aP8s0e', false)
 		ON CONFLICT (username) DO NOTHING;
 		`)
-		if err != nil {
-				return err
-		}
+	if err != nil {
+		return err
+	}
 
-		_, err = DB.Exec(`
+	_, err = DB.Exec(`
 		INSERT INTO applications (id, name, logo_url, repository_url, docker_compose, is_enabled)
 		VALUES
 			('app-1', 'VS Code', 'https://cdn.icon-icons.com/icons2/2107/PNG/512/file_type_vscode_icon_130084.png', 'https://github.com/linuxserver/docker-code-server', '...', true),
 			('app-2', 'Ubuntu Desktop', 'https://cdn.icon-icons.com/icons2/1508/PNG/512/ubuntu_104494.png', 'https://github.com/linuxserver/docker-webtop', '...', true)
 		ON CONFLICT (id) DO NOTHING;
 		`)
-		return err
+	return err
 }

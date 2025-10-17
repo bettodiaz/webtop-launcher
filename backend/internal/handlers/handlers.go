@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"webtop-launcher/internal/database"
+	"webtop-launcher/internal/middleware"
 	"webtop-launcher/internal/models"
-    "webtop-launcher/internal/middleware"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"

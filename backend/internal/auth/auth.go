@@ -30,6 +30,7 @@ type Credentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
 // RegisterAuthRoutes registers authentication-related routes.
 func RegisterAuthRoutes(router *mux.Router) {
 	router.HandleFunc("/login", LoginHandler).Methods("POST")
