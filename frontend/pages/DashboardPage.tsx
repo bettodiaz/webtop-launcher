@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import type { User, Application, Session } from '../types';
-import { useMockApi } from '../hooks/useMockApi';
+import api from '../api/client';
 import { Modal } from '../components/Modal';
 
 interface DashboardPageProps {

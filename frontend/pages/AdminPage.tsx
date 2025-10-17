@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { User, Application, Session } from '../types';
-import { useMockApi } from '../hooks/useMockApi';
+import api from '../api/client';
 import { PlusIcon } from '../components/icons/PlusIcon';
 import { Modal } from '../components/Modal';
 import { SyncIcon } from '../components/icons/SyncIcon';
