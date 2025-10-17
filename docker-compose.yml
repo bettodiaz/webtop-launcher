@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:16
@@ -8,7 +10,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks: [webnet]
+    networks:
+      - webnet
 
   backend:
     build: ./backend
@@ -18,15 +21,22 @@ services:
       - JWT_SECRET=supersecretkey
       - PORTAINER_URL=http://portainer:9000/api
       - PORTAINER_KEY=changeme
-    ports: ["8080:8080"]
-    depends_on: [postgres, portainer]
-    networks: [webnet]
+    expose:
+      - "8080"
+    depends_on:
+      - postgres
+      - portainer
+    networks:
+      - webnet
 
   frontend:
     build: ./frontend
-    ports: ["80:80"]
-    depends_on: [backend]
-    networks: [webnet]
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - webnet
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -36,7 +46,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    networks: [webnet]
+    networks:
+      - webnet
 
   traefik:
     image: traefik:v3.0
@@ -44,10 +55,12 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
-    ports: ["8081:8080"]
+    ports:
+      - "8081:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    networks: [webnet]
+    networks:
+      - webnet
 
 volumes:
   pgdata:
