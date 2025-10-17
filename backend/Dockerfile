@@ -2,21 +2,32 @@
 FROM golang:1.22 AS builder
 WORKDIR /app
 
-# Copy only module files first to leverage Docker layer caching
+# 1️⃣ Copy module definitions first (cache dependencies)
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Now copy the rest of the source code
+# 2️⃣ Copy rest of the source
 COPY . .
 
-# Double-check dependencies and tidy (optional but good practice)
+# 3️⃣ Verify / tidy modules
 RUN go mod tidy
 
-# Build the binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/server
+# 4️⃣ Build static binary
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server ./cmd/server
 
 # ---- Runtime stage ----
 FROM alpine:latest
 WORKDIR /root/
+
+# 5️⃣ Certificates for HTTPS calls (e.g., Portainer)
+RUN apk --no-cache add ca-certificates
+
+# 6️⃣ Copy built binary
 COPY --from=builder /app/server .
+
+# 7️⃣ Expose port & health check
+EXPOSE 8080
+HEALTHCHECK CMD wget --spider -q localhost:8080 || exit 1
+
+# 8️⃣ Run API
 CMD ["./server"]
