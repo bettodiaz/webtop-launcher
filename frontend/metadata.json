@@ -1,0 +1,5 @@
+{
+  "name": "Webtop Launcher",
+  "description": "An open-source, small-footprint alternative to Kasm, using Portainer-CE as the Docker manager. This portal allows users to launch, manage, and interact with Webtop/Selkies-based Docker containers with options for persistent profiles and session management.",
+  "requestFramePermissions": []
+}
