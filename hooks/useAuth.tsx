@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, ReactNode, useMemo } from 'react';
 import { User } from '../types';
 // Fix: Corrected import path for the api service.
-import { mockLogin, mockLogout } from '../services/api';
+import { login as apiLogin, logout as apiLogout } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -19,16 +19,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
 
   const login = async (username: string, password: string): Promise<User | null> => {
-    const loggedInUser = await mockLogin(username, password);
-    if (loggedInUser) {
+    try {
+      await apiLogin(username, password);
+      // Optionally, fetch user info from backend or decode JWT
+      const userStr = localStorage.getItem('user');
+      let loggedInUser: User | null = null;
+      if (userStr) {
+        loggedInUser = JSON.parse(userStr);
+      }
       setUser(loggedInUser);
-      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      return loggedInUser;
+    } catch (err) {
+      return null;
     }
-    return loggedInUser;
   };
 
   const logout = () => {
-    mockLogout();
+    apiLogout();
     setUser(null);
     localStorage.removeItem('user');
   };
