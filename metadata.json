@@ -1,0 +1,6 @@
+
+{
+  "name": "Webtop Launcher",
+  "description": "A self-hosted application launcher for the homelab community, designed to manage and access linuxserver.io Docker containers. It provides user and session management, with Portainer-CE as the backend orchestrator.",
+  "requestFramePermissions": []
+}
