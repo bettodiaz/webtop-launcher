@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"log"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var DB *sql.DB
@@ -82,13 +83,23 @@ func SeedInitialData() error {
 	// Default password is 'password' - hashed with bcrypt
 	// We'll insert an admin and a normal user, plus example applications.
 	// Let the database generate the UUIDs by omitting the id column.
-	_, err := DB.Exec(`
+	// Generate bcrypt hashes at runtime to ensure compatibility with the bcrypt implementation
+	adminHash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	userHash, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	_, err = DB.Exec(`
 		INSERT INTO users (username, password_hash, is_admin)
 		VALUES
-			('admin', '$2a$10$7EqJtq98hPqEX7fNZaFWoOaWc0w9fQxqY0ZyZqQYq9a6/2aP8s0e', true),
-			('user', '$2a$10$7EqJtq98hPqEX7fNZaFWoOaWc0w9fQxqY0ZyZqQYq9a6/2aP8s0e', false)
+			($1, $2, true),
+			($3, $4, false)
 		ON CONFLICT (username) DO NOTHING;
-		`)
+		`, "admin", string(adminHash), "user", string(userHash))
 	if err != nil {
 		return err
 	}
