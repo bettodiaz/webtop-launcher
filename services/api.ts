@@ -1,6 +1,6 @@
 import { User, Session, Application, PortainerConfig, PortainerStatus } from '../types';
 
-const API_BASE = (import.meta.env && import.meta.env.VITE_API_BASE) || process.env.API_BASE || 'http://localhost:8080/api';
+const API_BASE = (import.meta.env && import.meta.env.VITE_API_BASE) || process.env.API_BASE || '/api';
 function authHeaders() {
     const token = localStorage.getItem('jwt');
     return token ? { Authorization: `Bearer ${token}` } : {};
