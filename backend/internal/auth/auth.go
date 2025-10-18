@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -45,6 +46,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	// Log login attempts for debugging (do not keep verbose logging in production)
+	log.Printf("Login attempt: username=%s remote=%s", creds.Username, r.RemoteAddr)
 
 	user := &models.User{}
 	err = database.DB.QueryRow("SELECT id, username, password_hash, is_admin FROM users WHERE username = $1", creds.Username).Scan(&user.ID, &user.Username, &user.PasswordHash, &user.IsAdmin)
