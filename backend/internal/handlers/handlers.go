@@ -152,60 +152,60 @@ func RegisterSessionRoutes(router *mux.Router, adminRouter *mux.Router) {
 }
 
 func GetUserSessions(w http.ResponseWriter, r *http.Request) {
-       userID := r.Context().Value("userID").(string)
-       // Join sessions and applications to get application name and logo
-       query := `
+	userID := r.Context().Value("userID").(string)
+	// Join sessions and applications to get application name and logo
+	query := `
 	       SELECT s.id, s.user_id, s.application_id, s.portainer_stack_id, s.is_persistent, s.created_at,
 		      a.name, a.logo_url
 	       FROM sessions s
 	       JOIN applications a ON s.application_id = a.id
 	       WHERE s.user_id = $1
        `
-       rows, err := database.DB.Query(query, userID)
-       if err != nil {
-	       http.Error(w, err.Error(), http.StatusInternalServerError)
-	       return
-       }
-       defer rows.Close()
+	rows, err := database.DB.Query(query, userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
 
-       type sessionResponse struct {
-	       ID               string `json:"id"`
-	       UserID           string `json:"userId"`
-	       ApplicationID    string `json:"applicationId"`
-	       PortainerStackID int    `json:"portainerStackId"`
-	       IsPersistent     bool   `json:"persistent"`
-	       CreatedAt        string `json:"startTime"`
-	       ApplicationName  string `json:"applicationName"`
-	       ApplicationLogo  string `json:"applicationLogo"`
-       }
+	type sessionResponse struct {
+		ID               string `json:"id"`
+		UserID           string `json:"userId"`
+		ApplicationID    string `json:"applicationId"`
+		PortainerStackID int    `json:"portainerStackId"`
+		IsPersistent     bool   `json:"persistent"`
+		CreatedAt        string `json:"startTime"`
+		ApplicationName  string `json:"applicationName"`
+		ApplicationLogo  string `json:"applicationLogo"`
+	}
 
-       sessions := []sessionResponse{}
-       for rows.Next() {
-	       var s sessionResponse
-	       var createdAtRaw interface{}
-	       if err := rows.Scan(&s.ID, &s.UserID, &s.ApplicationID, &s.PortainerStackID, &s.IsPersistent, &createdAtRaw, &s.ApplicationName, &s.ApplicationLogo); err != nil {
-		       http.Error(w, err.Error(), http.StatusInternalServerError)
-		       return
-	       }
-	       // Convert createdAt to string (ISO8601)
-	       switch t := createdAtRaw.(type) {
-	       case string:
-		       s.CreatedAt = t
-	       case []byte:
-		       s.CreatedAt = string(t)
-	       case nil:
-		       s.CreatedAt = ""
-	       default:
-		       // Try to format as time.Time
-		       if tm, ok := createdAtRaw.(interface{ String() string }); ok {
-			       s.CreatedAt = tm.String()
-		       } else {
-			       s.CreatedAt = ""
-		       }
-	       }
-	       sessions = append(sessions, s)
-       }
-       json.NewEncoder(w).Encode(sessions)
+	sessions := []sessionResponse{}
+	for rows.Next() {
+		var s sessionResponse
+		var createdAtRaw interface{}
+		if err := rows.Scan(&s.ID, &s.UserID, &s.ApplicationID, &s.PortainerStackID, &s.IsPersistent, &createdAtRaw, &s.ApplicationName, &s.ApplicationLogo); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		// Convert createdAt to string (ISO8601)
+		switch t := createdAtRaw.(type) {
+		case string:
+			s.CreatedAt = t
+		case []byte:
+			s.CreatedAt = string(t)
+		case nil:
+			s.CreatedAt = ""
+		default:
+			// Try to format as time.Time
+			if tm, ok := createdAtRaw.(interface{ String() string }); ok {
+				s.CreatedAt = tm.String()
+			} else {
+				s.CreatedAt = ""
+			}
+		}
+		sessions = append(sessions, s)
+	}
+	json.NewEncoder(w).Encode(sessions)
 }
 
 func GetAdminSessions(w http.ResponseWriter, r *http.Request) {
