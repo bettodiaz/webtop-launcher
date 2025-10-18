@@ -22,7 +22,7 @@ const DashboardPage: React.FC = () => {
         setLoading(true);
         try {
           const [userSessions, availableApps] = await Promise.all([
-            getSessionsForUser(user.id),
+            getSessionsForUser(),
             getAvailableApplications(),
           ]);
           setSessions(userSessions);
@@ -47,7 +47,7 @@ const DashboardPage: React.FC = () => {
     if (selectedApp && user) {
       console.log(`Launching ${selectedApp.name} for ${user.username} with persistence: ${isPersistent}`);
       // Simulate API call
-      const newSession = await startSession(user.id, selectedApp.id, isPersistent);
+  const newSession = await startSession(selectedApp.id, isPersistent);
       if (newSession) {
           setSessions(prev => [...prev, newSession]);
           // Open new tab - this may be blocked by the sandbox environment
