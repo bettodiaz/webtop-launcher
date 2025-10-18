@@ -37,7 +37,7 @@ func main() {
 		}
 	}
 
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 
 	// Simple CORS for demo/homelab usage
 	r.Use(func(next http.Handler) http.Handler {
