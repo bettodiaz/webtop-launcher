@@ -98,7 +98,7 @@ func SeedInitialData() error {
 		VALUES
 			($1, $2, true),
 			($3, $4, false)
-		ON CONFLICT (username) DO NOTHING;
+		ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 		`, "admin", string(adminHash), "user", string(userHash))
 	if err != nil {
 		return err
