@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"webtop-launcher/internal/database"
 	"webtop-launcher/internal/middleware"
@@ -152,6 +153,7 @@ func RegisterSessionRoutes(router *mux.Router, adminRouter *mux.Router) {
 }
 
 func GetUserSessions(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetUserSessions handler hit")
 	userID := r.Context().Value("userID").(string)
 	// Join sessions and applications to get application name and logo
 	query := `
