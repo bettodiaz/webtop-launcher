@@ -48,7 +48,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Log login attempts for debugging (do not keep verbose logging in production)
-	log.Printf("Login attempt: username=%s remote=%s", creds.Username, r.RemoteAddr)
+	log.Printf("Login attempt: username=%s remote=%s password_len=%d", creds.Username, r.RemoteAddr, len(creds.Password))
 
 	user := &models.User{}
 	err = database.DB.QueryRow("SELECT id, username, password_hash, is_admin FROM users WHERE username = $1", creds.Username).Scan(&user.ID, &user.Username, &user.PasswordHash, &user.IsAdmin)
@@ -57,8 +57,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(creds.Password))
-	if err != nil {
+	// Log stored hash info for debugging
+	log.Printf("Stored hash length=%d prefix=%.20s", len(user.PasswordHash), user.PasswordHash)
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(creds.Password)); err != nil {
+		// Detailed debug log to help diagnose why password compare fails.
+		// WARNING: do not leave verbose password logs enabled in production.
+		log.Printf("Password compare failed for user=%s: %v", creds.Username, err)
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
