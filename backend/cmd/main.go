@@ -80,6 +80,11 @@ func main() {
 	sessionRouter := api.PathPrefix("/sessions").Subrouter()
 	handlers.RegisterSessionRoutes(sessionRouter, adminRouter)
 
+	// Public-facing application list route
+	appsListRouter := api.PathPrefix("/apps").Subrouter()
+	appsListRouter.Use(middleware.AuthMiddleware)
+	appsListRouter.HandleFunc("", handlers.GetApps).Methods("GET")
+
 	log.Println("Starting server on :8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
