@@ -21,12 +21,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (username: string, password: string): Promise<User | null> => {
     try {
       await apiLogin(username, password);
-      // Optionally, fetch user info from backend or decode JWT
-      const userStr = localStorage.getItem('user');
-      let loggedInUser: User | null = null;
-      if (userStr) {
-        loggedInUser = JSON.parse(userStr);
-      }
+      // Store minimal user info after successful login
+      const loggedInUser: User = { id: '', username, isAdmin: false };
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
       setUser(loggedInUser);
       return loggedInUser;
     } catch (err) {
